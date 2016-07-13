@@ -15,8 +15,13 @@ type MonitorWindowsService() =
     inherit ServiceBase(ServiceName = Constants.ServiceName)
 
     override x.OnStart(args) =
-        File.WriteAllText(@"C:\Users\michael.trittin\Desktop\service_log.txt",
-                "Started monitor service")
+        let watcher = new FileSystemWatcher()
+        watcher.Path <- @"C:\Users\michael.trittin\Desktop\"
+        watcher.EnableRaisingEvents <- true
+        watcher.IncludeSubdirectories <- false
+        watcher.Renamed.Add(fun _ ->
+            File.WriteAllText(@"C:\Users\michael.trittin\Desktop\service_log.txt",
+                "File event ocurred"))        
     override x.OnStop() = ()
 
 // Installer for the service
