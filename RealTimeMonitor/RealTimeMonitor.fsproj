@@ -51,7 +51,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Constants.fs" />
+    <Compile Include="Logger.fs" />
     <Compile Include="MonitorService.fs" />
+    <Compile Include="Installer.fs" />
     <None Include="App.config" />
   </ItemGroup>
   <PropertyGroup>
