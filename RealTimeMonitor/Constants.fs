@@ -6,4 +6,5 @@ module Constants =
     let DisplayName = "Realtime Server Monitor"
     [<Literal>]
     let LogPath = @"C:\realtime_server_monitor_log.txt"
-    let WatchDirectories = [|(@"C:\Users\michael.trittin\Desktop", false)|] // path, recursive?
+    [<Literal>]
+    let ConfigurationFile = @"C:\realtime_server_monitor_config.cfg"
