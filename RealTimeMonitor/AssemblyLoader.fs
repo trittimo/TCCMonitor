@@ -21,7 +21,15 @@ module AssemblyLoader =
                     timer.Start())
         
         member this.File = file
-        member this.Exposed = new Dictionary<string, obj>()
+        member this.Exposed = new Dictionary<string, System.Object>()
+
+        member this.SetExposedValue (key:string) (item:obj) =
+            match item with
+            | null -> () //System.Console.WriteLine("Called " + key)
+            | _ ->
+                this.Exposed.[key] <- item
+                //System.Console.WriteLine("Setting [" + key + "] <- " + item.ToString())
+
         member this.RunOperation (operation:Operation) =
             let assembly = Assembly.LoadFile(this.File.path)
             let instance, t = 
@@ -39,14 +47,20 @@ module AssemblyLoader =
 
         member this.RunParentedOperation (assembly:Assembly) (operation:Operation) (parent:System.Type) (instance:Option<obj>) =
             match (operation.kind, instance) with
-            | ("instance member", Some(inst)) -> this.Exposed.Add(operation.exposedName, parent.GetField(operation.name))
-            | ("member", _) -> this.Exposed.Add(operation.exposedName, parent.GetField(operation.name))
+            | ("instance member", Some(inst)) -> 
+                let field = parent.GetField(operation.name)
+                let value = field.GetValue(inst)
+                this.SetExposedValue operation.exposedName value
+            | ("static member", _) ->
+                let field = parent.GetField(operation.name)
+                let value = field.GetValue(null)
+                this.SetExposedValue operation.exposedName value
             | ("instance method", Some(inst)) ->
-                this.Exposed.Add
-                    (operation.exposedName,parent.InvokeMember(operation.name, BindingFlags.InvokeMethod, null, inst, [||]))
-            | ("method", _) ->
-                this.Exposed.Add
-                    (operation.exposedName, parent.InvokeMember(operation.name, BindingFlags.InvokeMethod, null, null, [||]))
+                this.SetExposedValue operation.exposedName
+                    (parent.InvokeMember(operation.name, BindingFlags.InvokeMethod, null, inst, [||]))
+            | ("static method", _) ->
+                this.SetExposedValue operation.exposedName
+                    (parent.InvokeMember(operation.name, BindingFlags.InvokeMethod, null, null, [||]))
             | _ -> ()
 
 
