@@ -1,10 +1,11 @@
 ﻿namespace Monitor
 module Constants =
+    open System
+    open System.IO
     [<Literal>]
     let ServiceName = "Realtime_Server_Monitor_1.0"
     [<Literal>]
     let DisplayName = "Realtime Server Monitor"
-    [<Literal>]
-    let LogPath = @"C:\realtime_server_monitor_log.txt"
-    [<Literal>]
-    let ConfigurationFile = @"C:\realtime_server_monitor_config.cfg"
+    
+    let LogPath = Path.Combine (@"C:\", "monitor_log.txt")
+    let ConfigPath = Path.Combine (@"C:\", "monitor_config.cfg")

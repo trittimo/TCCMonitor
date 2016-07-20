@@ -10,6 +10,10 @@ module MonitorService =
 
         override x.OnStart(args) =
             Logger.log "Started Realtime Server Monitor"
-            
+            let config = Configuration.init Constants.ConfigPath
+            Logger.log ("Loaded configuration. Monitoring " + config.definitions.Length.ToString() + " assemblies: ")
+            config.definitions |> Array.iter(fun x ->
+                Logger.log ("\tMonitoring " + x.ToString()))
 
-        override x.OnStop() = ()
+        override x.OnStop() =
+            Logger.log "Stopping Realtime Server Monitor"

@@ -55,10 +55,10 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="ValueExposer.fs" />
-    <Compile Include="AssemblyLoader.fs" />
     <Compile Include="Constants.fs" />
     <Compile Include="Logger.fs" />
+    <Compile Include="ValueExposer.fs" />
+    <Compile Include="AssemblyLoader.fs" />
     <Compile Include="Configuration.fs" />
     <Compile Include="MonitorService.fs" />
     <Compile Include="Installer.fs" />

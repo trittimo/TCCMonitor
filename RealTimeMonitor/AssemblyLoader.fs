@@ -63,7 +63,10 @@ module AssemblyLoader =
             | _ -> ()
 
 
-    let getAssemblyConfiguration (path:string) : AssemblyFile =
+    let private getAssemblyConfiguration (path:string) : AssemblyFile =
+        if not (File.Exists(path)) then
+            Logger.log ("Encountered exception loading assembly configuration path: " + path + ". Could not find file. Stopping service...")
+            failwith "Invalid configuration path"
         JsonConvert.DeserializeObject<AssemblyFile>(File.ReadAllText(path))
     
     let load (path:string) : AssemblyRunner =
