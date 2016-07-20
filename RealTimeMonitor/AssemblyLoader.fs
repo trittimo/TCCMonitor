@@ -21,14 +21,13 @@ module AssemblyLoader =
                     timer.Start())
         
         member this.File = file
-        member this.Exposed = new Dictionary<string, System.Object>()
+        member val Exposed = new Dictionary<string, System.Object>()
 
         member this.SetExposedValue (key:string) (item:obj) =
             match item with
-            | null -> () //System.Console.WriteLine("Called " + key)
+            | null -> ()
             | _ ->
                 this.Exposed.[key] <- item
-                //System.Console.WriteLine("Setting [" + key + "] <- " + item.ToString())
 
         member this.RunOperation (operation:Operation) =
             let assembly = Assembly.LoadFile(this.File.path)
