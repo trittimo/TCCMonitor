@@ -5,10 +5,10 @@ module AssemblyLoader =
     open System.Timers
     open System.Reflection
     open System.Collections.Generic
+    open System.Collections.Concurrent
 
     type AssemblyFile = {path:string; operations:Operation[]}
-    and Operation = {kind:string; name:string; exposedName:string; operations:Operation[]; refresh:float; arguments:Argument[];}
-    and Argument = {kind:string; value:string;}
+    and Operation = {kind:string; name:string; exposedName:string; operations:Operation[]; refresh:float; arguments:obj[];}
 
     type AssemblyRunner(file:AssemblyFile) as this =
         do
@@ -21,13 +21,17 @@ module AssemblyLoader =
                     timer.Start())
         
         member this.File = file
-        member val Exposed = new Dictionary<string, System.Object>()
+        member val Exposed = new ConcurrentDictionary<string, System.Object>()
+
 
         member this.SetExposedValue (key:string) (item:obj) =
             match item with
             | null -> ()
             | _ ->
-                this.Exposed.[key] <- item
+                if (this.Exposed.ContainsKey(key)) then
+                    this.Exposed.[key] <- item
+                else if not (this.Exposed.TryAdd(key, item)) then
+                    this.SetExposedValue key item
 
         member this.RunOperation (operation:Operation) =
             let assembly = Assembly.LoadFile(this.File.path)
@@ -36,7 +40,7 @@ module AssemblyLoader =
                 | "class" -> (None, Some(assembly.GetType(operation.name)))
                 | "instance class" ->
                     let asm = assembly.GetType(operation.name)
-                    (Some(System.Activator.CreateInstance(asm)), Some(asm))
+                    (Some(System.Activator.CreateInstance(asm, operation.arguments)), Some(asm))
                 | _ -> (None, None)
                 
             match t with
@@ -55,17 +59,28 @@ module AssemblyLoader =
                 let value = field.GetValue(null)
                 this.SetExposedValue operation.exposedName value
             | ("instance method", Some(inst)) ->
-                this.SetExposedValue operation.exposedName
-                    (parent.InvokeMember(operation.name, BindingFlags.InvokeMethod, null, inst, [||]))
+                let m = parent.GetMethod(operation.name)
+                let args = 
+                    match operation.arguments with
+                    | null -> null
+                    | _ -> Array.map2 (fun (arg:obj) (param:ParameterInfo) ->
+                            System.Convert.ChangeType(arg, param.ParameterType)) (operation.arguments) (m.GetParameters())
+                    
+                this.SetExposedValue operation.exposedName (m.Invoke(inst, args))
             | ("static method", _) ->
-                this.SetExposedValue operation.exposedName
-                    (parent.InvokeMember(operation.name, BindingFlags.InvokeMethod, null, null, [||]))
+                let m = parent.GetMethod(operation.name)
+                let args = 
+                    match operation.arguments with
+                    | null -> null
+                    | _ -> Array.map2 (fun (arg:obj) (param:ParameterInfo) ->
+                            System.Convert.ChangeType(arg, param.ParameterType)) (operation.arguments) (m.GetParameters())
+                    
+                this.SetExposedValue operation.exposedName (m.Invoke(null, args))
             | _ -> ()
 
 
     let private getAssemblyConfiguration (path:string) : AssemblyFile =
         if not (File.Exists(path)) then
-            Logger.log ("Encountered exception loading assembly configuration path: " + path + ". Could not find file. Stopping service...")
             failwith "Invalid configuration path"
         JsonConvert.DeserializeObject<AssemblyFile>(File.ReadAllText(path))
     
