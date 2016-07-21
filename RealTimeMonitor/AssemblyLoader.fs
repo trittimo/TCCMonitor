@@ -33,6 +33,10 @@ module AssemblyLoader =
                 else if not (this.Exposed.TryAdd(key, item)) then
                     this.SetExposedValue key item
 
+        member this.ConvertArguments (args:obj[]) (parameters:ParameterInfo[]) =
+            Array.map2 (fun (arg:obj) (param:ParameterInfo) ->
+                System.Convert.ChangeType(arg, param.ParameterType)) args parameters
+
         member this.RunOperation (operation:Operation) =
             let assembly = Assembly.LoadFile(this.File.path)
             let instance, t = 
@@ -40,7 +44,9 @@ module AssemblyLoader =
                 | "class" -> (None, Some(assembly.GetType(operation.name)))
                 | "instance class" ->
                     let asm = assembly.GetType(operation.name)
-                    (Some(System.Activator.CreateInstance(asm, operation.arguments)), Some(asm))
+                    let args = 
+                        this.ConvertArguments (operation.arguments) ((asm.GetConstructors() |> Array.find(fun x -> x.GetParameters().Length = operation.arguments.Length)).GetParameters())
+                    (Some(System.Activator.CreateInstance(asm, args)), Some(asm))
                 | _ -> (None, None)
                 
             match t with
@@ -63,18 +69,14 @@ module AssemblyLoader =
                 let args = 
                     match operation.arguments with
                     | null -> null
-                    | _ -> Array.map2 (fun (arg:obj) (param:ParameterInfo) ->
-                            System.Convert.ChangeType(arg, param.ParameterType)) (operation.arguments) (m.GetParameters())
-                    
+                    | _ -> this.ConvertArguments (operation.arguments) (m.GetParameters())
                 this.SetExposedValue operation.exposedName (m.Invoke(inst, args))
             | ("static method", _) ->
                 let m = parent.GetMethod(operation.name)
                 let args = 
                     match operation.arguments with
                     | null -> null
-                    | _ -> Array.map2 (fun (arg:obj) (param:ParameterInfo) ->
-                            System.Convert.ChangeType(arg, param.ParameterType)) (operation.arguments) (m.GetParameters())
-                    
+                    | _ -> this.ConvertArguments (operation.arguments) (m.GetParameters())
                 this.SetExposedValue operation.exposedName (m.Invoke(null, args))
             | _ -> ()
 
