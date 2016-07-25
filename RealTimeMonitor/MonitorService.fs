@@ -1,9 +1,9 @@
 ﻿namespace Monitor
-open System.ServiceProcess
-open System.IO
-open Newtonsoft.Json
-
 module MonitorService =
+    open System.ServiceProcess
+    open System.IO
+    open Newtonsoft.Json
+    open AssemblyMonitor
     // The windows service
     type Service() =
         inherit ServiceBase(ServiceName = Constants.ServiceName)

@@ -58,7 +58,6 @@
     <Compile Include="Constants.fs" />
     <Compile Include="Logger.fs" />
     <Compile Include="ValueExposer.fs" />
-    <Compile Include="AssemblyLoader.fs" />
     <Compile Include="Configuration.fs" />
     <Compile Include="MonitorService.fs" />
     <Compile Include="Installer.fs" />
@@ -81,6 +80,13 @@
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\AssemblyMonitor\AssemblyMonitor\AssemblyMonitor.fsproj">
+      <Name>AssemblyMonitor</Name>
+      <Project>{3b17da02-f1fa-467f-bfc2-31268424e6f2}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

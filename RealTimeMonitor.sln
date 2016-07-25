@@ -7,6 +7,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "RealTimeMonitor", "RealTime
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerformanceMonitor", "PerformanceMonitor\PerformanceMonitor.csproj", "{5DEFD24F-4A16-44D1-8339-EF9426D078A1}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "AssemblyMonitor", "..\AssemblyMonitor\AssemblyMonitor\AssemblyMonitor.fsproj", "{3B17DA02-F1FA-467F-BFC2-31268424E6F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{5DEFD24F-4A16-44D1-8339-EF9426D078A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5DEFD24F-4A16-44D1-8339-EF9426D078A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5DEFD24F-4A16-44D1-8339-EF9426D078A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B17DA02-F1FA-467F-BFC2-31268424E6F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B17DA02-F1FA-467F-BFC2-31268424E6F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B17DA02-F1FA-467F-BFC2-31268424E6F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B17DA02-F1FA-467F-BFC2-31268424E6F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
