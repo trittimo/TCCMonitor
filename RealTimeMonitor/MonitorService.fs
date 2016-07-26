@@ -16,8 +16,8 @@ module MonitorService =
             let timer = new System.Timers.Timer()
             timer.Elapsed.Add(fun _ ->
                 loaders |> Seq.iter(fun x ->
-                    let exposed = (sprintf "%A" (x.Exposed))
-                    Logger.log("Exposed: " + exposed)))
+                    x.Exposed.Keys |> Seq.iter(fun key ->
+                        ValueExposer.expose key x.Exposed.[key])))
             timer.Interval <- config.refresh
             timer.Enabled <- true
             timer.Start()
